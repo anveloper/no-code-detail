@@ -1,0 +1,5 @@
+.wrapper {
+  &[data-selected=true] {
+    border: 1px solid #0064FF;
+  }
+}

@@ -6,9 +6,9 @@ import styles from "@/product-detail/product-detail.module.css";
 import { PageDPNode } from "@/types/dp-node";
 import { ITEM_TYPE, ItemType } from "@/types/item-type";
 import { getUuid } from "@/utils/hash";
-import { useCallback, useState } from "react";
+import { memo, useCallback, useState } from "react";
 
-const ProductDetail = () => {
+const ProductDetail = memo(() => {
   const [pages, setPages] = useState<PageDPNode[]>(() => [
     { id: getUuid(), type: ITEM_TYPE.PAGE, order: 0, timestamp: new Date().getTime() },
     { id: getUuid(), type: ITEM_TYPE.PAGE, order: 1, timestamp: new Date().getTime() + 1 },
@@ -26,7 +26,15 @@ const ProductDetail = () => {
     });
   }, []);
 
-  const addItem = useCallback((pageId: string, type: ItemType) => {}, []);
+  const addItem = useCallback((pageId: string, type: ItemType) => {
+    setPages((p) => {
+      return p.map((page) => {
+        if (page.id !== pageId) return page;
+        const children = [...(page.items ?? []), { id: getUuid(), type }];
+        return { ...page, items: children };
+      });
+    });
+  }, []);
 
   const renderPages = useCallback(() => {
     return [...pages]
@@ -47,6 +55,6 @@ const ProductDetail = () => {
       <WidthController />
     </RootProvider>
   );
-};
+});
 
 export default ProductDetail;

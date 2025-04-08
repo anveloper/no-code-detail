@@ -4,7 +4,7 @@ export type DPNode = {
   id: string;
   type: ItemType;
   props?: { [key: string]: string | number | boolean };
-  children?: DPNode[];
+  items?: DPNode[];
   order?: number;
 };
 

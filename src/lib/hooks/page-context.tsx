@@ -5,6 +5,7 @@ type PageContextType = {
   selected: string[];
   isSelected: (id: string) => boolean;
   toggle: (id: string, isPage?: boolean) => void;
+  toggleOne: (id: string) => void;
   clear: () => void;
 };
 
@@ -25,15 +26,19 @@ export const PageProvider = ({ pageId, children }: { pageId: string; children: R
     },
     [pageId, clearOthers]
   );
+  const toggleOne = useCallback((id: string) => {
+    setSelected((p) => (p.length !== 1 || !p.includes(id) ? [id] : []));
+  }, []);
 
   const value = useMemo(
     () => ({
       selected,
       isSelected,
       toggle,
+      toggleOne,
       clear,
     }),
-    [selected, isSelected, toggle, clear]
+    [selected, isSelected, toggle, toggleOne, clear]
   );
 
   useEffect(() => {
