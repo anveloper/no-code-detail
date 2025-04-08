@@ -13,7 +13,7 @@ const TextItem = ({ pageId, item, x, y }: { pageId: string; item: DPNode; x: num
   };
   return (
     <ItemWrapper itemId={item.id} x={x} y={y}>
-      <span ref={ref} contentEditable={selected.includes(item.id)} suppressContentEditableWarning onBlur={handleBlur}>
+      <span ref={ref} contentEditable={selected.includes(item.id)} suppressContentEditableWarning onBlur={handleBlur} data-page-id={pageId} data-item-id={item.id}>
         {item.content || "텍스트를 입력하세요"}
       </span>
     </ItemWrapper>

@@ -6,7 +6,9 @@ const ImageItem = ({ pageId, item, x, y }: { pageId: string; item: DPNode; x: nu
   const { selected } = usePage();
   return (
     <ItemWrapper itemId={item.id} x={x} y={y}>
-      ImageItem
+      <span data-page-id={pageId} data-item-id={item.id}>
+        ImageItem
+      </span>
     </ItemWrapper>
   );
 };
