@@ -14,18 +14,26 @@ const ProductDetail = () => {
     { id: getUuid(), type: ITEM_TYPE.PAGE, order: 1, timestamp: new Date().getTime() + 1 },
   ]);
 
-  const addPage = useCallback((order = 0) => {
-    setPages((p) => [...p, { id: getUuid(), type: ITEM_TYPE.PAGE, order, timestamp: new Date().getTime() }]);
+  const addPage = useCallback((selectedPage = "") => {
+    setPages((p) => {
+      let order = 0;
+      const targetIdx = p.sort((a, b) => (a.order !== b.order ? a.order - b.order : b.timestamp - a.timestamp)).findIndex(({ id }) => id === selectedPage);
+      const target = p[targetIdx];
+      const next = p[targetIdx + 1];
+      if (target && next) order = (target.order + next.order) / 2;
+      else if (target) order = target.order + 1;
+      return [...p, { id: getUuid(), type: ITEM_TYPE.PAGE, order, timestamp: new Date().getTime() }];
+    });
   }, []);
 
   const addItem = useCallback((pageId: string, type: ItemType) => {}, []);
 
   const renderPages = useCallback(() => {
     return [...pages]
-      .sort((a, b) => (a.order !== b.order ? a.order - b.order : a.timestamp - b.timestamp))
+      .sort((a, b) => (a.order !== b.order ? a.order - b.order : b.timestamp - a.timestamp))
       .map((page) => (
         <PageProvider key={page.id} pageId={page.id}>
-          <DetailPage pageId={page.id} />
+          <DetailPage page={page} />
         </PageProvider>
       ));
   }, [pages]);

@@ -14,7 +14,7 @@ const RootContext = createContext<{
 
 export const RootProvider = ({ children }: { children: React.ReactNode }) => {
   const [pageWidth, setPageWidth] = useState<number>(PAGE_WIDTH.WEB);
-  const [pageHeight] = useState(900);
+  const [pageHeight] = useState(780);
   const [selectedPage, setSelectedPage] = useState("");
   const registry = useRef<Map<string, ClearFn>>(new Map());
 
