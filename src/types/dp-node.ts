@@ -6,6 +6,7 @@ export type DPNode = {
   props?: { [key: string]: string | number | boolean };
   items?: DPNode[];
   order?: number;
+  content?: string;
 };
 
 export type PageDPNode = DPNode & {
