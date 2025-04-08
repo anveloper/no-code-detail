@@ -3,7 +3,7 @@ import path from "path";
 import { defineConfig } from "vite";
 
 export default defineConfig({
-  base: "/product-detail-page/",
+  base: "/no-code-detail/",
   plugins: [react()],
   resolve: {
     alias: {
