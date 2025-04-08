@@ -15,11 +15,7 @@ const DetailPage = ({ page }: DetailPageProps) => {
       onClick={() => toggle(page.id, true)}
       data-selected={page.id === selectedPage}
       data-order={page.order}
-    >
-      {page.id}
-      <br />
-      {page.order}
-    </div>
+    ></div>
   );
 };
 
