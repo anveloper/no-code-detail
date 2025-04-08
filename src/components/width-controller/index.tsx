@@ -18,7 +18,7 @@ const WidthController = () => {
 
   return (
     <div className={styles.selector}>
-      <select value={pageWidthValues.includes(pageWidth) ? pageWidth : 0} onChange={handleSelect}>
+      <select value={pageWidthValues.includes(pageWidth) ? pageWidth : 1000} onChange={handleSelect}>
         {pageWidthValues.map((value, idx) => {
           return (
             <option key={idx} value={value}>

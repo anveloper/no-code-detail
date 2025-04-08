@@ -6,6 +6,7 @@
   border: 1px solid #F8F8F8;
   border-radius: 4px;
   padding: 12px;
+  min-width: 480px;
 
   &[data-selected=true] {
     border: 1px solid #0064FF;
