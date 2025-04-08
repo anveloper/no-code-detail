@@ -1,10 +1,10 @@
-import { ReactNode, createContext, useContext, useEffect, useMemo, useState } from "react";
+import { ReactNode, createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useRoot } from "./root-context";
 
 type PageContextType = {
   selected: string[];
   isSelected: (id: string) => boolean;
-  toggle: (id: string) => void;
+  toggle: (id: string, isPage?: boolean) => void;
   clear: () => void;
 };
 
@@ -16,12 +16,25 @@ export const PageProvider = ({ pageId, children }: { pageId: string; children: R
 
   const clear = () => setSelected([]);
   const isSelected = (id: string) => selected.includes(id);
-  const toggle = (id: string) => {
-    clearOthers(pageId);
-    setSelected((p) => (p.includes(id) ? p.filter((uid) => uid !== id) : [...p, id]));
-  };
 
-  const value = useMemo(() => ({ selected, isSelected, toggle, clear }), [selected, isSelected, toggle, clear]);
+  const toggle = useCallback(
+    (id: string, isPage = false) => {
+      clearOthers(pageId);
+      if (isPage) return;
+      setSelected((p) => (p.includes(id) ? p.filter((uid) => uid !== id) : [...p, id]));
+    },
+    [pageId, clearOthers]
+  );
+
+  const value = useMemo(
+    () => ({
+      selected,
+      isSelected,
+      toggle,
+      clear,
+    }),
+    [selected, isSelected, toggle, clear]
+  );
 
   useEffect(() => {
     register(pageId, clear);

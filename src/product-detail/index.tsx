@@ -17,16 +17,13 @@ const ProductDetail = () => {
   }, []);
 
   const renderPages = useCallback(() => {
-    const sorted = [...pages].sort((a, b) => {
-      if (a.order !== b.order) return a.order - b.order;
-      return a.timestamp - b.timestamp;
-    });
-
-    return sorted.map((page) => (
-      <PageProvider key={page.id} pageId={page.id}>
-        <DetailPage pageId={page.id} />
-      </PageProvider>
-    ));
+    return [...pages]
+      .sort((a, b) => (a.order !== b.order ? a.order - b.order : a.timestamp - b.timestamp))
+      .map((page) => (
+        <PageProvider key={page.id} pageId={page.id}>
+          <DetailPage pageId={page.id} />
+        </PageProvider>
+      ));
   }, [pages]);
 
   return (

@@ -6,6 +6,7 @@ type ClearFn = () => void;
 const RootContext = createContext<{
   pageWidth: number;
   pageHeight: number;
+  selectedPage: string;
   handlePageWidth: (width: number) => void;
   register: (pageUid: string, clearFn: ClearFn) => void;
   clearOthers: (except: string) => void;
@@ -14,6 +15,7 @@ const RootContext = createContext<{
 export const RootProvider = ({ children }: { children: React.ReactNode }) => {
   const [pageWidth, setPageWidth] = useState<number>(PAGE_WIDTH.WEB);
   const [pageHeight] = useState(900);
+  const [selectedPage, setSelectedPage] = useState("");
   const registry = useRef<Map<string, ClearFn>>(new Map());
 
   const register = (uid: string, fn: ClearFn) => {
@@ -24,13 +26,24 @@ export const RootProvider = ({ children }: { children: React.ReactNode }) => {
     registry.current.forEach((fn, uid) => {
       if (uid !== except) fn();
     });
+    setSelectedPage(except);
   };
 
   const handlePageWidth = useCallback((width: number) => {
     setPageWidth(width);
   }, []);
 
-  const value = useMemo(() => ({ pageWidth, pageHeight, handlePageWidth, register, clearOthers }), [pageWidth, handlePageWidth, register, clearOthers]);
+  const value = useMemo(
+    () => ({
+      pageWidth,
+      pageHeight,
+      selectedPage,
+      handlePageWidth,
+      register,
+      clearOthers,
+    }),
+    [pageWidth, pageHeight, selectedPage, handlePageWidth, register, clearOthers]
+  );
   return <RootContext.Provider value={value}>{children}</RootContext.Provider>;
 };
 
