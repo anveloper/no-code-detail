@@ -1,0 +1,56 @@
+.controller {
+  position: fixed;
+  top: 50%;
+  left: 24px;
+  z-index: 12;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  transform: translate(0, -50%);
+
+  &>span {
+    cursor: pointer;
+    border: 1px solid #777777;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 4px;
+  }
+}
+
+.selector {
+  width: 240px;
+  height: 24px;
+  background-color: white;
+  border: 1px solid white;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &>* {
+    padding: 0;
+    width: 50%;
+    height: 100%;
+    background-color: transparent;
+    border: none;
+  }
+
+  &>input {
+    padding-right: 24px;
+    text-align: right;
+  }
+
+  &::after {
+    position: absolute;
+    top: 50%;
+    right: 4px;
+    content: "px";
+    transform: translate(0, -50%);
+    font-size: 14px;
+  }
+}

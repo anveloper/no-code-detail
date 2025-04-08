@@ -7,4 +7,5 @@ export type DPNode = {
 
 export type PageDPNode = DPNode & {
   order: number;
+  timestamp: number;
 };
