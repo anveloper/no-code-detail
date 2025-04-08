@@ -1,5 +1,5 @@
 import { ReactNode, createContext, useContext, useEffect, useMemo, useState } from "react";
-import { useRoot } from "../../product-detail/root-context";
+import { useRoot } from "./root-context";
 
 type PageContextType = {
   selected: string[];
@@ -32,6 +32,6 @@ export const PageProvider = ({ pageId, children }: { pageId: string; children: R
 
 export const usePage = () => {
   const ctx = useContext(PageContext);
-  if (!ctx) throw new Error("useSelected must be used within a SelectedProvider");
+  if (!ctx) throw new Error("usePage must be used within a PageProvider");
   return ctx;
 };
