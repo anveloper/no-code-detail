@@ -1,8 +1,9 @@
 {
-  "name": "product-detail-page",
+  "name": "no-code-detail",
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "homepage": "https://anveloper.github.io/no-code-detail/",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
