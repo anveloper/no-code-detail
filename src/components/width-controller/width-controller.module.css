@@ -1,0 +1,36 @@
+.selector {
+  width: 200px;
+  height: 24px;
+  background-color: white;
+  border: 1px solid #666666;
+  position: fixed;
+  top: 4px;
+  left: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 4px;
+  padding: 4px;
+
+  &>* {
+    padding: 0;
+    width: 50%;
+    height: 100%;
+    background-color: transparent;
+    border: none;
+  }
+
+  &>input {
+    padding-right: 24px;
+    text-align: right;
+  }
+
+  &::after {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    content: "px";
+    transform: translate(0, -50%);
+    font-size: 14px;
+  }
+}
