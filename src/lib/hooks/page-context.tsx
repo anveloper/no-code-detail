@@ -3,44 +3,46 @@ import { useRoot } from "./root-context";
 
 type PageContextType = {
   isEditing: (id: string) => boolean;
+  notAllowDrag: () => boolean;
   edit: (id: string | null) => void;
   isSelected: (id: string) => boolean;
-  toggle: (id: string, isPage?: boolean) => void;
+  select: (id: string) => void;
   clear: () => void;
 };
+
+type Mode = { type: "none" } | { type: "select"; id: string } | { type: "edit"; id: string };
 
 const PageContext = createContext<PageContextType | undefined>(undefined);
 
 export const PageProvider = ({ pageId, children }: { pageId: string; children: ReactNode }) => {
-  const { register, clearOthers } = useRoot();
+  const { register, selectPage } = useRoot();
+  const [mode, setMode] = useState<Mode>({ type: "none" });
 
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const isEditing = useCallback((id: string) => editingId === id, [editingId]);
-  const edit = useCallback(
-    (id: string | null) => {
-      clearOthers(pageId);
-      setEditingId((p) => (p === id ? null : id));
-    },
-    [pageId, clearOthers]
-  );
-
-  const [selected, setSelected] = useState<string[]>([]);
-  const isSelected = useCallback((id: string) => selected.includes(id), [selected]);
-  const toggle = useCallback(
-    (id: string, isPage = false) => {
-      clearOthers(pageId);
-      if (isPage) return;
-      setSelected((p) => (p.includes(id) ? p.filter((uid) => uid !== id) : [...p, id]));
-    },
-    [pageId, clearOthers]
-  );
+  const isSelected = (id: string) => mode.type === "select" && mode.id === id;
+  const isEditing = (id: string) => mode.type === "edit" && mode.id === id;
+  const notAllowDrag = () => mode.type === "edit";
 
   const clear = useCallback(() => {
-    setEditingId(null);
-    setSelected([]);
+    setMode({ type: "none" });
   }, []);
 
-  const value = useMemo(() => ({ isEditing, edit, isSelected, toggle, clear }), [isEditing, edit, isSelected, toggle, clear]);
+  const edit = useCallback((id: string | null) => {
+    setMode(id ? { type: "edit", id } : { type: "none" });
+  }, []);
+
+  const select = useCallback(
+    (id: string) => {
+      selectPage(pageId);
+      setMode({ type: "select", id });
+    },
+    [pageId]
+  );
+
+  const value = useMemo(
+    //
+    () => ({ isEditing, notAllowDrag, edit, isSelected, select, clear }),
+    [isEditing, notAllowDrag, edit, isSelected, select, clear]
+  );
 
   useEffect(() => {
     register(pageId, clear);

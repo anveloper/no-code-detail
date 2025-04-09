@@ -5,10 +5,9 @@ import ItemWrapper from "../item-wrapper";
 
 type AlignType = "flex-start" | "center" | "flex-end";
 
-const TextItem = ({ pageId, item, x, y }: { pageId: string; item: DPNode; x: number; y: number }) => {
-  const { isSelected, isEditing, edit, clear } = usePage();
+const TextItem = ({ pageId, item }: { pageId: string; item: DPNode }) => {
+  const { edit, select, isSelected, isEditing } = usePage();
   const ref = useRef<HTMLDivElement>(null);
-
   const [size, setSize] = useState({ w: 200, h: 80 });
   const [align, setAlign] = useState<{ h: AlignType; v: AlignType }>({ h: "center", v: "center" });
 
@@ -24,9 +23,8 @@ const TextItem = ({ pageId, item, x, y }: { pageId: string; item: DPNode; x: num
     userSelect: isEditing(item.id) ? "text" : "none",
     cursor: !isEditing(item.id) && isSelected(item.id) ? "move" : "default",
   };
-
   return (
-    <ItemWrapper itemId={item.id} x={x} y={y}>
+    <ItemWrapper itemId={item.id}>
       <div //
         ref={ref}
         contentEditable={isEditing(item.id)}
@@ -35,10 +33,11 @@ const TextItem = ({ pageId, item, x, y }: { pageId: string; item: DPNode; x: num
           edit(null);
           if (ref.current) console.log(ref.current.textContent);
         }}
-        onDoubleClick={(e) => {
+        onClick={(e) => {
           e.stopPropagation();
-          clear();
-          edit(item.id);
+          if (isEditing(item.id)) return;
+          if (!isSelected(item.id)) select(item.id);
+          else edit(item.id);
         }}
         onInput={() => {
           if (ref.current) {

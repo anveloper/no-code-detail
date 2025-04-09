@@ -2,4 +2,8 @@
   &[data-selected=true] {
     border: 1px solid #0064FF;
   }
+
+  &[data-editing=true] {
+    border: 1px solid #FF2B4B;
+  }
 }

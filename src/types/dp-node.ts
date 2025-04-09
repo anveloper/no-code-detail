@@ -6,6 +6,7 @@ export type DPNode = {
   props?: { [key: string]: string | number | boolean };
   order?: number;
   content?: string;
+  size?: { w: number; h: number };
   pos?: { x: number; y: number };
   items?: DPNode[];
 };

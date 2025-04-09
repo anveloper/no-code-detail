@@ -9,7 +9,7 @@ const RootContext = createContext<{
   selectedPage: string;
   handlePageWidth: (width: number) => void;
   register: (pageUid: string, clearFn: ClearFn) => void;
-  clearOthers: (except: string) => void;
+  selectPage: (except: string) => void;
 } | null>(null);
 
 export const RootProvider = ({ children }: { children: React.ReactNode }) => {
@@ -22,7 +22,7 @@ export const RootProvider = ({ children }: { children: React.ReactNode }) => {
     registry.current.set(uid, fn);
   };
 
-  const clearOthers = (except: string) => {
+  const selectPage = (except: string) => {
     registry.current.forEach((fn, uid) => {
       if (uid !== except) fn();
     });
@@ -40,9 +40,9 @@ export const RootProvider = ({ children }: { children: React.ReactNode }) => {
       selectedPage,
       handlePageWidth,
       register,
-      clearOthers,
+      selectPage,
     }),
-    [pageWidth, pageHeight, selectedPage, handlePageWidth, register, clearOthers]
+    [pageWidth, pageHeight, selectedPage, handlePageWidth, register, selectPage]
   );
   return <RootContext.Provider value={value}>{children}</RootContext.Provider>;
 };
