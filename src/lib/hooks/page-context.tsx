@@ -2,22 +2,30 @@ import { ReactNode, createContext, useCallback, useContext, useEffect, useMemo, 
 import { useRoot } from "./root-context";
 
 type PageContextType = {
-  selected: string[];
+  isEditing: (id: string) => boolean;
+  edit: (id: string | null) => void;
   isSelected: (id: string) => boolean;
   toggle: (id: string, isPage?: boolean) => void;
-  toggleOne: (id: string) => void;
   clear: () => void;
 };
 
 const PageContext = createContext<PageContextType | undefined>(undefined);
 
 export const PageProvider = ({ pageId, children }: { pageId: string; children: ReactNode }) => {
-  const [selected, setSelected] = useState<string[]>([]);
   const { register, clearOthers } = useRoot();
 
-  const clear = () => setSelected([]);
-  const isSelected = (id: string) => selected.includes(id);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const isEditing = useCallback((id: string) => editingId === id, [editingId]);
+  const edit = useCallback(
+    (id: string | null) => {
+      clearOthers(pageId);
+      setEditingId((p) => (p === id ? null : id));
+    },
+    [pageId, clearOthers]
+  );
 
+  const [selected, setSelected] = useState<string[]>([]);
+  const isSelected = useCallback((id: string) => selected.includes(id), [selected]);
   const toggle = useCallback(
     (id: string, isPage = false) => {
       clearOthers(pageId);
@@ -26,20 +34,13 @@ export const PageProvider = ({ pageId, children }: { pageId: string; children: R
     },
     [pageId, clearOthers]
   );
-  const toggleOne = useCallback((id: string) => {
-    setSelected((p) => (p.length !== 1 || !p.includes(id) ? [id] : []));
+
+  const clear = useCallback(() => {
+    setEditingId(null);
+    setSelected([]);
   }, []);
 
-  const value = useMemo(
-    () => ({
-      selected,
-      isSelected,
-      toggle,
-      toggleOne,
-      clear,
-    }),
-    [selected, isSelected, toggle, toggleOne, clear]
-  );
+  const value = useMemo(() => ({ isEditing, edit, isSelected, toggle, clear }), [isEditing, edit, isSelected, toggle, clear]);
 
   useEffect(() => {
     register(pageId, clear);

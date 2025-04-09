@@ -1,6 +1,6 @@
 import styles from "@/components/item-wrapper/item-wrapper.module.css";
 import { usePage } from "@/lib";
-import { ReactNode, useRef, useState } from "react";
+import { CSSProperties, ReactNode, useRef, useState } from "react";
 type ItemWrapperProps = {
   itemId: string;
   children: ReactNode;
@@ -8,23 +8,22 @@ type ItemWrapperProps = {
   y: number;
 };
 const ItemWrapper = ({ itemId, children, x, y }: ItemWrapperProps) => {
-  const { toggle, toggleOne, selected } = usePage();
+  const { toggle, isSelected } = usePage();
 
   const [pos, setPos] = useState({ x, y });
   const isDragging = useRef(false);
   const dragStart = useRef({ x: 0, y: 0 });
+
   const handleMouseDown = (e: React.MouseEvent) => {
-    if (!selected) return; // 선택된 아이템만 드래그 가능
+    if (!isSelected(itemId)) return;
 
     isDragging.current = true;
-    dragStart.current = {
-      x: e.clientX,
-      y: e.clientY,
-    };
+    dragStart.current = { x: e.clientX, y: e.clientY };
 
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseup", handleMouseUp);
   };
+
   const handleMouseMove = (e: MouseEvent) => {
     if (!isDragging.current) return;
 
@@ -43,18 +42,20 @@ const ItemWrapper = ({ itemId, children, x, y }: ItemWrapperProps) => {
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     e.stopPropagation();
-    if (e.ctrlKey || e.metaKey) toggle(itemId);
-    else toggleOne(itemId);
+    toggle(itemId);
   };
 
+  const style: CSSProperties = {
+    padding: "4px",
+    position: "absolute",
+    top: `${pos.y}px`,
+    left: `${pos.x}px`,
+    transform: "translate(-50%, -50%)",
+    width: "max-content",
+    height: "max-content",
+  };
   return (
-    <div
-      className={styles.wrapper}
-      onClick={handleClick}
-      onMouseDown={handleMouseDown}
-      style={{ position: "absolute", top: `${pos.y}px`, left: `${pos.x}px`, transform: "translate(-50%, -50%)" }}
-      data-selected={selected.includes(itemId)}
-    >
+    <div className={styles.wrapper} onClick={handleClick} onMouseDown={handleMouseDown} style={style} data-selected={isSelected(itemId)}>
       {children}
     </div>
   );
