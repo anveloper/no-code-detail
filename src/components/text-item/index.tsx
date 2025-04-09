@@ -1,18 +1,22 @@
 import { usePage } from "@/lib";
 import { DPNode } from "@/types/dp-node";
-import { CSSProperties, useRef, useState } from "react";
+import { CSSProperties, useEffect, useRef, useState } from "react";
 import ItemWrapper from "../item-wrapper";
 
 type AlignType = "flex-start" | "center" | "flex-end";
 
 const TextItem = ({ pageId, item }: { pageId: string; item: DPNode }) => {
-  const { edit, select, isSelected, isEditing } = usePage();
+  const { select, isSelected, isEditing } = usePage();
   const ref = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ w: 200, h: 80 });
-  const [align, setAlign] = useState<{ h: AlignType; v: AlignType }>({ h: "center", v: "center" });
+  const [align, setAlign] = useState<{ h: AlignType; v: AlignType }>({
+    h: "center",
+    v: "center",
+  });
 
+  const editing = isEditing(item.id);
   const style: CSSProperties = {
-    display: "inline-flex", // 💡 핵심
+    display: "inline-flex",
     flexDirection: "column",
     alignItems: align.h,
     justifyContent: align.v,
@@ -20,24 +24,25 @@ const TextItem = ({ pageId, item }: { pageId: string; item: DPNode }) => {
     whiteSpace: "pre-wrap",
     wordBreak: "break-word",
     overflow: "visible",
-    userSelect: isEditing(item.id) ? "text" : "none",
-    cursor: !isEditing(item.id) && isSelected(item.id) ? "move" : "default",
+    userSelect: editing ? "text" : "none",
+    cursor: !editing && isSelected(item.id) ? "move" : "default",
   };
+
+  useEffect(() => {
+    if (editing && ref.current) {
+      ref.current.focus();
+    }
+  }, [editing]);
+
   return (
     <ItemWrapper itemId={item.id}>
-      <div //
+      <div
         ref={ref}
-        contentEditable={isEditing(item.id)}
+        contentEditable={editing}
         suppressContentEditableWarning
         onBlur={() => {
-          edit(null);
+          select(item.id);
           if (ref.current) console.log(ref.current.textContent);
-        }}
-        onClick={(e) => {
-          e.stopPropagation();
-          if (isEditing(item.id)) return;
-          if (!isSelected(item.id)) select(item.id);
-          else edit(item.id);
         }}
         onInput={() => {
           if (ref.current) {
@@ -48,9 +53,10 @@ const TextItem = ({ pageId, item }: { pageId: string; item: DPNode }) => {
         }}
         data-page-id={pageId}
         data-item-id={item.id}
+        tabIndex={0}
         style={style}
       >
-        {item.content || "텍스트를 입력하세요"}
+        {item.content || "텍스트를 입력하세요."}
       </div>
     </ItemWrapper>
   );
