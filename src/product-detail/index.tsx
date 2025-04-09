@@ -40,7 +40,7 @@ const ProductDetail = memo(() => {
     return [...pages]
       .sort((a, b) => (a.order !== b.order ? a.order - b.order : b.timestamp - a.timestamp))
       .map((page) => (
-        <PageProvider key={page.id} pageId={page.id}>
+        <PageProvider key={page.id} page={page}>
           <DetailPage page={page} />
         </PageProvider>
       ));

@@ -1,7 +1,10 @@
+import { PageDPNode } from "@/types/dp-node";
 import { ReactNode, createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useRoot } from "./root-context";
 
 type PageContextType = {
+  getItemPos: (id: string) => { x: number; y: number };
+  updateItemPos: (id: string, pos: { x: number; y: number }) => void;
   isEditing: (id: string) => boolean;
   notAllowDrag: () => boolean;
   edit: (id: string | null) => void;
@@ -14,8 +17,19 @@ type Mode = { type: "none" } | { type: "select"; id: string } | { type: "edit"; 
 
 const PageContext = createContext<PageContextType | undefined>(undefined);
 
-export const PageProvider = ({ pageId, children }: { pageId: string; children: ReactNode }) => {
-  const { register, selectPage } = useRoot();
+export const PageProvider = ({ page: origin, children }: { page: PageDPNode; children: ReactNode }) => {
+  const { register, selectPage, pageWidth, pageHeight } = useRoot();
+  const [page, setPage] = useState<PageDPNode>(origin);
+
+  const getItemPos = (itemId: string) => {
+    const pos = page.items?.find(({ id }) => id === itemId)?.pos;
+    return pos || { x: pageWidth / 2, y: pageHeight / 2 };
+  };
+
+  const updateItemPos = useCallback((id: string, pos: { x: number; y: number }) => {
+    setPage((p) => ({ ...p, items: p.items?.map((item) => (item.id === id ? { ...item, pos } : item)) }));
+  }, []);
+
   const [mode, setMode] = useState<Mode>({ type: "none" });
 
   const isSelected = (id: string) => mode.type === "select" && mode.id === id;
@@ -32,21 +46,25 @@ export const PageProvider = ({ pageId, children }: { pageId: string; children: R
 
   const select = useCallback(
     (id: string) => {
-      selectPage(pageId);
+      selectPage(page.id);
       setMode({ type: "select", id });
     },
-    [pageId]
+    [page.id]
   );
 
   const value = useMemo(
     //
-    () => ({ isEditing, notAllowDrag, edit, isSelected, select, clear }),
-    [isEditing, notAllowDrag, edit, isSelected, select, clear]
+    () => ({ getItemPos, updateItemPos, isEditing, notAllowDrag, edit, isSelected, select, clear }),
+    [getItemPos, updateItemPos, isEditing, notAllowDrag, edit, isSelected, select, clear]
   );
 
   useEffect(() => {
-    register(pageId, clear);
-  }, [pageId]);
+    register(page.id, clear);
+  }, [page.id]);
+
+  useEffect(() => {
+    setPage(origin);
+  }, [origin]);
 
   return <PageContext.Provider value={value}>{children}</PageContext.Provider>;
 };

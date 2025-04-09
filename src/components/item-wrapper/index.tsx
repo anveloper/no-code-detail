@@ -1,6 +1,6 @@
 import styles from "@/components/item-wrapper/item-wrapper.module.css";
-import { usePage, useRoot } from "@/lib";
-import { CSSProperties, ReactNode, useRef, useState } from "react";
+import { usePage } from "@/lib";
+import { CSSProperties, ReactNode, useRef } from "react";
 
 type ItemWrapperProps = {
   itemId: string;
@@ -8,18 +8,17 @@ type ItemWrapperProps = {
 };
 
 const ItemWrapper = ({ itemId, children }: ItemWrapperProps) => {
-  const { pageWidth, pageHeight } = useRoot();
-  const { isEditing, isSelected, select, edit, notAllowDrag } = usePage();
-
-  const [pos, setPos] = useState({ x: pageWidth / 2, y: pageHeight / 2 });
+  const { getItemPos, updateItemPos, isEditing, isSelected, select, edit, notAllowDrag } = usePage();
   const isDragging = useRef(false);
   const dragStart = useRef({ x: 0, y: 0 });
+  const startPos = useRef({ x: 0, y: 0 });
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (notAllowDrag()) return;
 
     isDragging.current = true;
     dragStart.current = { x: e.clientX, y: e.clientY };
+    startPos.current = getItemPos(itemId);
 
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseup", handleMouseUp);
@@ -35,8 +34,8 @@ const ItemWrapper = ({ itemId, children }: ItemWrapperProps) => {
 
     if (notAllowDrag() || !isDragging.current) return;
 
-    dragStart.current = { x: e.clientX, y: e.clientY };
-    setPos((p) => ({ x: p.x + dx, y: p.y + dy }));
+    const newPos = { x: startPos.current.x + dx, y: startPos.current.y + dy };
+    updateItemPos(itemId, newPos);
   };
 
   const handleMouseUp = () => {
@@ -59,6 +58,7 @@ const ItemWrapper = ({ itemId, children }: ItemWrapperProps) => {
     edit(null);
   };
 
+  const pos = getItemPos(itemId);
   const style: CSSProperties = {
     borderRadius: "4px",
     padding: "4px",
