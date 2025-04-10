@@ -27,7 +27,7 @@ const TextController = () => {
       <select value={font || FONTS[0].value} onChange={handleChangeFont}>
         {FONTS.map(({ label, value }, key) => {
           return (
-            <option key={key} value={value}>
+            <option key={key} value={value} style={{ fontFamily: value }}>
               {label}
             </option>
           );
