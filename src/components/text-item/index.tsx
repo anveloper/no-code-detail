@@ -13,7 +13,7 @@ const TEXT_ALIGN = {
 
 const TextItem = ({ pageId, item }: { pageId: string; item: DPNode }) => {
   const { setWrapSelectedItem } = useRoot();
-  const { select, isSelected, isEditing, getItemContent, updateItemContent } = usePage();
+  const { select, isSelected, isEditing, getItemContent, updateItemSize, updateItemContent } = usePage();
   const ref = useRef<HTMLDivElement>(null);
 
   const [align, setAlign] = useState<{ h: AlignType; v: AlignType }>({
@@ -53,6 +53,17 @@ const TextItem = ({ pageId, item }: { pageId: string; item: DPNode }) => {
     // 이후 서버 저장 등도 가능
   };
 
+  const handleHeight = () => {
+    if (!ref.current) return;
+
+    const newHeight = ref.current.scrollHeight;
+
+    updateItemSize(item.id, {
+      w: item.size?.w ?? ref.current.offsetWidth,
+      h: newHeight,
+    });
+  };
+
   useEffect(() => {
     if (!selected) return;
     setWrapSelectedItem((style: CSSProperties) => {
@@ -69,6 +80,7 @@ const TextItem = ({ pageId, item }: { pageId: string; item: DPNode }) => {
         contentEditable={editing}
         suppressContentEditableWarning
         onBlur={handleBlur}
+        onKeyUp={handleHeight}
         tabIndex={0}
         style={style}
         data-type={item.type}
