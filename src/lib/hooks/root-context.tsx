@@ -1,5 +1,5 @@
 import { PAGE_WIDTH } from "@/config/constants/page-width";
-import { CSSProperties, createContext, useCallback, useContext, useMemo, useRef, useState } from "react";
+import { CSSProperties, createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 
 type ClearFn = () => void;
 
@@ -33,6 +33,7 @@ export const RootProvider = ({ children }: { children: React.ReactNode }) => {
     registry.current.forEach((fn, uid) => {
       if (uid !== except) fn();
     });
+    setSelectedItem("");
     setSelectedPage(except);
   };
 
@@ -51,6 +52,11 @@ export const RootProvider = ({ children }: { children: React.ReactNode }) => {
   const setWrapSelectedItem = useCallback((fn: (style: CSSProperties) => void) => {
     setWrapFn(() => fn);
   }, []);
+
+  useEffect(() => {
+    if (selectedPage || !registry.current.entries().next().value) return;
+    setSelectedPage(registry.current.keys().next().value);
+  }, [selectedPage]);
 
   const value = useMemo(
     () => ({ pageWidth, pageHeight, selectedPage, selectedItem, handlePageWidth, register, selectPage, selectItem, clearItem, wrapSelectedItem: wrapFn, setWrapSelectedItem }),

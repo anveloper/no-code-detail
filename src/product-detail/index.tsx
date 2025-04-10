@@ -29,6 +29,7 @@ const ProductDetail = memo(() => {
 
   const addItem = useCallback((pageId: string, type: ItemType) => {
     setPages((p) => {
+      if (!pageId) pageId = p?.[0].id || "";
       return p.map((page) => {
         if (page.id !== pageId) return page;
         const children = [...(page.items ?? []), { id: getUuid(), type }];
