@@ -5,15 +5,19 @@ import { useRoot } from "./root-context";
 type PageContextType = {
   getItemPos: (id: string) => { x: number; y: number };
   updateItemPos: (id: string, pos: { x: number; y: number }) => void;
+  getItemSize: (id: string) => { w: number; h: number };
+  updateItemSize: (id: string, size: { w: number; h: number }) => void;
   isEditing: (id: string) => boolean;
   notAllowDrag: () => boolean;
   edit: (id: string | null) => void;
   isSelected: (id: string) => boolean;
   select: (id: string) => void;
+  isResizing: (id: string) => boolean;
+  resize: (id: string) => void;
   clear: () => void;
 };
 
-type Mode = { type: "none" } | { type: "select"; id: string } | { type: "edit"; id: string };
+type Mode = { type: "none" } | { type: "select"; id: string } | { type: "edit"; id: string } | { type: "resize"; id: string };
 
 const PageContext = createContext<PageContextType | undefined>(undefined);
 
@@ -35,19 +39,33 @@ export const PageProvider = ({ page, updatePage, children }: PageProviderProps) 
     updatePage((p) => ({ ...p, items: p.items?.map((item) => (item.id === id ? { ...item, pos } : item)) }));
   }, []);
 
+  const getItemSize = (itemId: string) => {
+    const size = page.items?.find(({ id }) => id === itemId)?.size;
+    return size || { w: 120, h: 80 };
+  };
+
+  const updateItemSize = useCallback((id: string, size: { w: number; h: number }) => {
+    updatePage((p) => ({ ...p, items: p.items?.map((item) => (item.id === id ? { ...item, size } : item)) }));
+  }, []);
+
   const [mode, setMode] = useState<Mode>({ type: "none" });
 
-  const isSelected = (id: string) => mode.type === "select" && mode.id === id;
   const isEditing = (id: string) => mode.type === "edit" && mode.id === id;
+  const isSelected = (id: string) => mode.type === "select" && mode.id === id;
+  const isResizing = (id: string) => mode.type === "resize" && mode.id === id;
   const notAllowDrag = () => mode.type === "edit";
 
   const clear = useCallback(() => {
     setMode({ type: "none" });
   }, []);
 
-  const edit = useCallback((id: string | null) => {
-    setMode(id ? { type: "edit", id } : { type: "none" });
-  }, []);
+  const edit = useCallback(
+    (id: string | null) => {
+      selectPage(page.id);
+      setMode(id ? { type: "edit", id } : { type: "none" });
+    },
+    [page.id]
+  );
 
   const select = useCallback(
     (id: string) => {
@@ -56,11 +74,17 @@ export const PageProvider = ({ page, updatePage, children }: PageProviderProps) 
     },
     [page.id]
   );
+  const resize = useCallback(
+    (id: string) => {
+      setMode({ type: "resize", id });
+    },
+    [page.id]
+  );
 
   const value = useMemo(
     //
-    () => ({ getItemPos, updateItemPos, isEditing, notAllowDrag, edit, isSelected, select, clear }),
-    [getItemPos, updateItemPos, isEditing, notAllowDrag, edit, isSelected, select, clear]
+    () => ({ getItemPos, updateItemPos, getItemSize, updateItemSize, isEditing, notAllowDrag, edit, isSelected, select, isResizing, resize, clear }),
+    [getItemPos, updateItemPos, getItemSize, updateItemSize, isEditing, notAllowDrag, edit, isSelected, select, isResizing, resize, clear]
   );
 
   useEffect(() => {

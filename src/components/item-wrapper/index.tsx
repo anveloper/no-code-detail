@@ -1,6 +1,7 @@
 import styles from "@/components/item-wrapper/item-wrapper.module.css";
 import { usePage } from "@/lib";
 import { CSSProperties, ReactNode, useRef } from "react";
+import SizeController from "./size-controller";
 
 type ItemWrapperProps = {
   itemId: string;
@@ -8,7 +9,7 @@ type ItemWrapperProps = {
 };
 
 const ItemWrapper = ({ itemId, children }: ItemWrapperProps) => {
-  const { getItemPos, updateItemPos, isEditing, isSelected, select, edit, notAllowDrag } = usePage();
+  const { getItemPos, updateItemPos, getItemSize, isEditing, isSelected, select, edit, notAllowDrag } = usePage();
   const isDragging = useRef(false);
   const dragStart = useRef({ x: 0, y: 0 });
   const startPos = useRef({ x: 0, y: 0 });
@@ -54,11 +55,8 @@ const ItemWrapper = ({ itemId, children }: ItemWrapperProps) => {
     edit(itemId);
   };
 
-  const handleBlur = () => {
-    edit(null);
-  };
-
   const pos = getItemPos(itemId);
+  const size = getItemSize(itemId);
   const style: CSSProperties = {
     borderRadius: "4px",
     padding: "4px",
@@ -66,8 +64,8 @@ const ItemWrapper = ({ itemId, children }: ItemWrapperProps) => {
     top: `${pos.y}px`,
     left: `${pos.x}px`,
     transform: "translate(-50%, -50%)",
-    width: "max-content",
-    height: "max-content",
+    width: size.w ? size.w + 4 : "max-content",
+    height: size.h ? size.h + 4 : "max-content",
   };
 
   return (
@@ -76,13 +74,13 @@ const ItemWrapper = ({ itemId, children }: ItemWrapperProps) => {
       style={style}
       onClick={handleClick}
       onDoubleClick={handleDoubleClick}
-      onBlur={handleBlur}
       onMouseDown={handleMouseDown}
       data-selected={isSelected(itemId)}
       data-editing={isEditing(itemId)}
       tabIndex={0}
     >
       {children}
+      <SizeController itemId={itemId} />
     </div>
   );
 };

@@ -1,0 +1,38 @@
+.point {
+  position: absolute;
+  height: 8px;
+  width: 8px;
+
+  background-color: #0064FF;
+
+  display: none;
+  cursor: pointer;
+  padding: 2px;
+  border-radius: 8px;
+  transition: all 0.2s ease-in-out;
+
+  &[data-v=top] {
+    top: -6px;
+  }
+
+  &[data-v=bottom] {
+    bottom: -6px;
+  }
+
+  &[data-h=left] {
+    left: -6px;
+  }
+
+  &[data-h=right] {
+    right: -6px;
+  }
+
+  &[data-selected=true] {
+    display: block;
+    opacity: 0.2;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+}
