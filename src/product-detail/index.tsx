@@ -3,7 +3,7 @@ import RootController from "@/components/root-controller";
 import WidthController from "@/components/width-controller";
 import { PageProvider, RootProvider } from "@/lib";
 import styles from "@/product-detail/product-detail.module.css";
-import { PageDPNode } from "@/types/dp-node";
+import { PageDPNode, PageUpdater } from "@/types/dp-node";
 import { ITEM_TYPE, ItemType } from "@/types/item-type";
 import { getUuid } from "@/utils/hash";
 import { memo, useCallback, useState } from "react";
@@ -39,11 +39,17 @@ const ProductDetail = memo(() => {
   const renderPages = useCallback(() => {
     return [...pages]
       .sort((a, b) => (a.order !== b.order ? a.order - b.order : b.timestamp - a.timestamp))
-      .map((page) => (
-        <PageProvider key={page.id} page={page}>
-          <DetailPage page={page} />
-        </PageProvider>
-      ));
+      .map((page) => {
+        const updatePage = (next: PageUpdater) => {
+          const tmp = (p: PageDPNode) => (p.id === page.id ? (typeof next === "function" ? next(p) : next) : p);
+          setPages((prev) => prev.map(tmp));
+        };
+        return (
+          <PageProvider key={page.id} page={page} updatePage={updatePage}>
+            <DetailPage page={page} />
+          </PageProvider>
+        );
+      });
   }, [pages]);
 
   return (

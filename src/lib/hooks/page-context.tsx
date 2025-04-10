@@ -1,4 +1,4 @@
-import { PageDPNode } from "@/types/dp-node";
+import { PageDPNode, PageUpdater } from "@/types/dp-node";
 import { ReactNode, createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useRoot } from "./root-context";
 
@@ -17,9 +17,14 @@ type Mode = { type: "none" } | { type: "select"; id: string } | { type: "edit"; 
 
 const PageContext = createContext<PageContextType | undefined>(undefined);
 
-export const PageProvider = ({ page: origin, children }: { page: PageDPNode; children: ReactNode }) => {
+type PageProviderProps = {
+  page: PageDPNode;
+  updatePage: (updater: PageUpdater) => void;
+  children: ReactNode;
+};
+
+export const PageProvider = ({ page, updatePage, children }: PageProviderProps) => {
   const { register, selectPage, pageWidth, pageHeight } = useRoot();
-  const [page, setPage] = useState<PageDPNode>(origin);
 
   const getItemPos = (itemId: string) => {
     const pos = page.items?.find(({ id }) => id === itemId)?.pos;
@@ -27,7 +32,7 @@ export const PageProvider = ({ page: origin, children }: { page: PageDPNode; chi
   };
 
   const updateItemPos = useCallback((id: string, pos: { x: number; y: number }) => {
-    setPage((p) => ({ ...p, items: p.items?.map((item) => (item.id === id ? { ...item, pos } : item)) }));
+    updatePage((p) => ({ ...p, items: p.items?.map((item) => (item.id === id ? { ...item, pos } : item)) }));
   }, []);
 
   const [mode, setMode] = useState<Mode>({ type: "none" });
@@ -61,18 +66,6 @@ export const PageProvider = ({ page: origin, children }: { page: PageDPNode; chi
   useEffect(() => {
     register(page.id, clear);
   }, [page.id]);
-
-  useEffect(() => {
-    setPage((p) => {
-      const next = structuredClone(origin);
-      if (!next.items) return next;
-      next.items = next.items.map((item, i) => {
-        const prev = p.items?.[i];
-        return { ...item, pos: prev?.pos ?? item.pos, size: prev?.size ?? item.size };
-      });
-      return next;
-    });
-  }, [origin]);
 
   return <PageContext.Provider value={value}>{children}</PageContext.Provider>;
 };

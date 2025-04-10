@@ -15,3 +15,6 @@ export type PageDPNode = DPNode & {
   order: number;
   timestamp: number;
 };
+
+export type UpdaterType<T> = (p: T) => T;
+export type PageUpdater = PageDPNode | UpdaterType<PageDPNode>;
