@@ -40,6 +40,7 @@ export const Point = ({ v, h, selected, itemId }: PointProps) => {
     if (h === "left") newWidth = Math.max(30, startRef.current.w - dx);
     if (v === "bottom") newHeight = Math.max(30, startRef.current.h + dy);
     if (v === "top") newHeight = Math.max(30, startRef.current.h - dy);
+
     updateItemSize(itemId, { w: newWidth, h: newHeight });
   };
 

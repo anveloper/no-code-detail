@@ -68,7 +68,7 @@ const ItemWrapper = ({ itemId, children }: ItemWrapperProps) => {
     left: `${pos.x}px`,
     transform: "translate(-50%, -50%)",
     width: size.w ? size.w + 4 : "max-content",
-    height: size.h ? size.h + 4 : "max-content",
+    height: "max-content",
   };
 
   return (

@@ -80,7 +80,7 @@ const TextItem = ({ pageId, item }: { pageId: string; item: DPNode }) => {
         contentEditable={editing}
         suppressContentEditableWarning
         onBlur={handleBlur}
-        onKeyUp={handleHeight}
+        onInput={handleHeight}
         tabIndex={0}
         style={style}
         data-type={item.type}
