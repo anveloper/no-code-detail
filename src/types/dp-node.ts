@@ -9,6 +9,7 @@ export type DPNode = {
   size?: { w: number; h: number };
   pos?: { x: number; y: number };
   items?: DPNode[];
+  style?: Record<string, string>;
 };
 
 export type PageDPNode = DPNode & {

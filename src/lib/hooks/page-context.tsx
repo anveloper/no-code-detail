@@ -7,6 +7,8 @@ type PageContextType = {
   updateItemPos: (id: string, pos: { x: number; y: number }) => void;
   getItemSize: (id: string) => { w: number; h: number };
   updateItemSize: (id: string, size: { w: number; h: number }) => void;
+  getItemContent: (id: string) => string;
+  updateItemContent: (id: string, content: string) => void;
   isEditing: (id: string) => boolean;
   notAllowDrag: () => boolean;
   edit: (id: string | null) => void;
@@ -41,11 +43,20 @@ export const PageProvider = ({ page, updatePage, children }: PageProviderProps) 
 
   const getItemSize = (itemId: string) => {
     const size = page.items?.find(({ id }) => id === itemId)?.size;
-    return size || { w: 120, h: 80 };
+    return size || { w: 160, h: 80 };
   };
 
   const updateItemSize = useCallback((id: string, size: { w: number; h: number }) => {
     updatePage((p) => ({ ...p, items: p.items?.map((item) => (item.id === id ? { ...item, size } : item)) }));
+  }, []);
+
+  const getItemContent = (itemId: string) => {
+    const content = page.items?.find(({ id }) => id === itemId)?.content;
+    return content || "내용을 입력해주세요.";
+  };
+
+  const updateItemContent = useCallback((id: string, content: string) => {
+    updatePage((p) => ({ ...p, items: p.items?.map((item) => (item.id === id ? { ...item, content } : item)) }));
   }, []);
 
   const [mode, setMode] = useState<Mode>({ type: "none" });
@@ -83,8 +94,8 @@ export const PageProvider = ({ page, updatePage, children }: PageProviderProps) 
 
   const value = useMemo(
     //
-    () => ({ getItemPos, updateItemPos, getItemSize, updateItemSize, isEditing, notAllowDrag, edit, isSelected, select, isResizing, resize, clear }),
-    [getItemPos, updateItemPos, getItemSize, updateItemSize, isEditing, notAllowDrag, edit, isSelected, select, isResizing, resize, clear]
+    () => ({ getItemPos, updateItemPos, getItemSize, updateItemSize, getItemContent, updateItemContent, isEditing, notAllowDrag, edit, isSelected, select, isResizing, resize, clear }),
+    [getItemPos, updateItemPos, getItemSize, updateItemSize, getItemContent, updateItemContent, isEditing, notAllowDrag, edit, isSelected, select, isResizing, resize, clear]
   );
 
   useEffect(() => {

@@ -1,5 +1,5 @@
 import styles from "@/components/item-wrapper/item-wrapper.module.css";
-import { usePage } from "@/lib";
+import { usePage, useRoot } from "@/lib";
 import { CSSProperties, ReactNode, useRef } from "react";
 import SizeController from "./size-controller";
 
@@ -9,6 +9,7 @@ type ItemWrapperProps = {
 };
 
 const ItemWrapper = ({ itemId, children }: ItemWrapperProps) => {
+  const { selectItem } = useRoot();
   const { getItemPos, updateItemPos, getItemSize, isEditing, isSelected, select, edit, notAllowDrag } = usePage();
   const isDragging = useRef(false);
   const dragStart = useRef({ x: 0, y: 0 });
@@ -47,11 +48,13 @@ const ItemWrapper = ({ itemId, children }: ItemWrapperProps) => {
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (isEditing(itemId)) return;
+    selectItem(itemId);
     select(itemId);
   };
 
   const handleDoubleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
+    selectItem(itemId);
     edit(itemId);
   };
 

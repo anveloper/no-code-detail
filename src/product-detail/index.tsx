@@ -1,5 +1,6 @@
 import DetailPage from "@/components/detail-page";
 import RootController from "@/components/root-controller";
+import TextController from "@/components/text-controller";
 import WidthController from "@/components/width-controller";
 import { PageProvider, RootProvider } from "@/lib";
 import styles from "@/product-detail/product-detail.module.css";
@@ -59,6 +60,7 @@ const ProductDetail = memo(() => {
       </div>
       <RootController addPage={addPage} addItem={addItem} />
       <WidthController />
+      <TextController />
     </RootProvider>
   );
 });
