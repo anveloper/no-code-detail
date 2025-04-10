@@ -63,7 +63,15 @@ export const PageProvider = ({ page: origin, children }: { page: PageDPNode; chi
   }, [page.id]);
 
   useEffect(() => {
-    setPage(origin);
+    setPage((p) => {
+      const next = structuredClone(origin);
+      if (!next.items) return next;
+      next.items = next.items.map((item, i) => {
+        const prev = p.items?.[i];
+        return { ...item, pos: prev?.pos ?? item.pos, size: prev?.size ?? item.size };
+      });
+      return next;
+    });
   }, [origin]);
 
   return <PageContext.Provider value={value}>{children}</PageContext.Provider>;
